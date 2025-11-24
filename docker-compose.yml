@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dev_secret_key
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - SQL_ENGINE=django.contrib.gis.db.backends.postgis
+      - SQL_DATABASE=fuel_db
+      - SQL_USER=fuel_user
+      - SQL_PASSWORD=fuel_password
+      - SQL_HOST=db
+      - SQL_PORT=5432
+
+  db:
+    image: postgis/postgis:15-3.3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=fuel_user
+      - POSTGRES_PASSWORD=fuel_password
+      - POSTGRES_DB=fuel_db
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
